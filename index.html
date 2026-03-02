@@ -67,7 +67,6 @@
         }
       }
 
-      /* ─── Header ─── */
       .header {
         display: flex;
         align-items: center;
@@ -102,7 +101,6 @@
         margin-top: 2px;
       }
 
-      /* ─── Card ─── */
       .card {
         background: var(--bg2);
         border-radius: var(--radius);
@@ -119,7 +117,6 @@
         margin-bottom: 14px;
       }
 
-      /* ─── Input ─── */
       .field {
         display: flex;
         flex-direction: column;
@@ -158,7 +155,6 @@
         opacity: 0.7;
       }
 
-      /* ─── Button ─── */
       .btn {
         width: 100%;
         padding: 15px;
@@ -190,7 +186,6 @@
         transform: none;
       }
 
-      /* ─── Status ─── */
       .status {
         display: none;
         align-items: center;
@@ -220,7 +215,6 @@
         flex-shrink: 0;
       }
 
-      /* ─── Info row ─── */
       .info-row {
         display: flex;
         justify-content: space-between;
@@ -242,7 +236,6 @@
         font-weight: 500;
       }
 
-      /* ─── Spinner ─── */
       .spinner {
         width: 18px;
         height: 18px;
@@ -268,7 +261,6 @@
   </head>
   <body>
     <div class="app">
-      <!-- Header -->
       <div class="header">
         <div class="avatar" id="avatar">?</div>
         <div class="header-text">
@@ -277,7 +269,6 @@
         </div>
       </div>
 
-      <!-- Info card -->
       <div class="card" id="info-card">
         <div class="card-label">Данные аккаунта</div>
         <div class="info-row">
@@ -298,7 +289,6 @@
         </div>
       </div>
 
-      <!-- Form card -->
       <div class="card">
         <div class="card-label">Отправить боту</div>
 
@@ -328,7 +318,6 @@
       tg.ready();
       tg.expand();
 
-      // ── Заполняем данные пользователя ──
       const user = tg.initDataUnsafe?.user;
 
       if (user) {
@@ -360,14 +349,14 @@
         document.getElementById("info-lang").textContent =
           user.language_code ?? "—";
       } else {
-        // не в Telegram — показываем заглушку для разработки
         document.getElementById("user-name").textContent = "Dev Mode";
         document.getElementById("user-username").textContent = "не в Telegram";
         document.getElementById("avatar").textContent = "🛠";
       }
 
       // ── Отправка ──
-      const BACKEND = "https://your-server.com"; // <-- замени на свой URL
+      const BACKEND =
+        "https://through-solutions-distant-thoughts.trycloudflare.com";
 
       const btn = document.getElementById("btn");
       const inp = document.getElementById("inp");
