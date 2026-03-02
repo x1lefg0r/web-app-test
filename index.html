@@ -1,11 +1,419 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Mini App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=Onest:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: var(--tg-theme-bg-color, #18181b);
+        --bg2: var(--tg-theme-secondary-bg-color, #27272a);
+        --text: var(--tg-theme-text-color, #fafafa);
+        --hint: var(--tg-theme-hint-color, #71717a);
+        --accent: var(--tg-theme-button-color, #3b82f6);
+        --accent-t: var(--tg-theme-button-text-color, #ffffff);
+        --link: var(--tg-theme-link-color, #60a5fa);
+        --radius: 16px;
+        --font-head: "Unbounded", sans-serif;
+        --font-body: "Onest", sans-serif;
+      }
+
+      html,
+      body {
+        height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        overscroll-behavior: none;
+      }
+
+      .app {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        padding: 24px 20px 32px;
+        gap: 24px;
+        animation: fadeIn 0.35s ease both;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ─── Header ─── */
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: fadeIn 0.35s 0.05s ease both;
+      }
+
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: grid;
+        place-items: center;
+        font-family: var(--font-head);
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--accent-t);
+        flex-shrink: 0;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+      }
+
+      .header-text h1 {
+        font-family: var(--font-head);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.2px;
+      }
+      .header-text p {
+        font-size: 12px;
+        color: var(--hint);
+        margin-top: 2px;
+      }
+
+      /* ─── Card ─── */
+      .card {
+        background: var(--bg2);
+        border-radius: var(--radius);
+        padding: 20px;
+        animation: fadeIn 0.35s 0.1s ease both;
+      }
+
+      .card-label {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--hint);
+        margin-bottom: 14px;
+      }
+
+      /* ─── Input ─── */
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .field label {
+        font-size: 13px;
+        color: var(--hint);
+      }
+
+      .field input,
+      .field textarea {
+        width: 100%;
+        background: var(--bg);
+        border: 1.5px solid color-mix(in srgb, var(--hint) 30%, transparent);
+        border-radius: 12px;
+        padding: 12px 14px;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.2s;
+        resize: none;
+      }
+
+      .field input:focus,
+      .field textarea:focus {
+        border-color: var(--accent);
+      }
+
+      .field input::placeholder,
+      .field textarea::placeholder {
+        color: var(--hint);
+        opacity: 0.7;
+      }
+
+      /* ─── Button ─── */
+      .btn {
+        width: 100%;
+        padding: 15px;
+        background: var(--accent);
+        color: var(--accent-t);
+        border: none;
+        border-radius: 14px;
+        font-family: var(--font-head);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition:
+          opacity 0.15s,
+          transform 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn:active {
+        opacity: 0.8;
+        transform: scale(0.98);
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* ─── Status ─── */
+      .status {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        font-size: 14px;
+        animation: fadeIn 0.2s ease both;
+      }
+
+      .status.success {
+        display: flex;
+        background: color-mix(in srgb, #22c55e 15%, transparent);
+        color: #4ade80;
+        border: 1px solid color-mix(in srgb, #22c55e 30%, transparent);
+      }
+
+      .status.error {
+        display: flex;
+        background: color-mix(in srgb, #ef4444 15%, transparent);
+        color: #f87171;
+        border: 1px solid color-mix(in srgb, #ef4444 30%, transparent);
+      }
+
+      .status-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      /* ─── Info row ─── */
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid
+          color-mix(in srgb, var(--hint) 15%, transparent);
+      }
+      .info-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .info-row span:first-child {
+        color: var(--hint);
+        font-size: 13px;
+      }
+      .info-row span:last-child {
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      /* ─── Spinner ─── */
+      .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2.5px solid color-mix(in srgb, var(--accent-t) 30%, transparent);
+        border-top-color: var(--accent-t);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        display: none;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .btn.loading .spinner {
+        display: block;
+      }
+      .btn.loading .btn-label {
+        display: none;
+      }
+    </style>
   </head>
   <body>
-    hello world
+    <div class="app">
+      <!-- Header -->
+      <div class="header">
+        <div class="avatar" id="avatar">?</div>
+        <div class="header-text">
+          <h1 id="user-name">Загрузка...</h1>
+          <p id="user-username"></p>
+        </div>
+      </div>
+
+      <!-- Info card -->
+      <div class="card" id="info-card">
+        <div class="card-label">Данные аккаунта</div>
+        <div class="info-row">
+          <span>ID</span>
+          <span id="info-id">—</span>
+        </div>
+        <div class="info-row">
+          <span>Имя</span>
+          <span id="info-name">—</span>
+        </div>
+        <div class="info-row">
+          <span>Username</span>
+          <span id="info-username">—</span>
+        </div>
+        <div class="info-row">
+          <span>Язык</span>
+          <span id="info-lang">—</span>
+        </div>
+      </div>
+
+      <!-- Form card -->
+      <div class="card">
+        <div class="card-label">Отправить боту</div>
+
+        <div class="field">
+          <label>Сообщение</label>
+          <textarea
+            id="inp"
+            rows="3"
+            placeholder="Введи что-нибудь..."
+          ></textarea>
+        </div>
+
+        <div class="status" id="status">
+          <span class="status-icon" id="status-icon"></span>
+          <span id="status-text"></span>
+        </div>
+
+        <button class="btn" id="btn" style="margin-top: 8px">
+          <div class="spinner"></div>
+          <span class="btn-label">Отправить</span>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+
+      // ── Заполняем данные пользователя ──
+      const user = tg.initDataUnsafe?.user;
+
+      if (user) {
+        const initials =
+          [user.first_name, user.last_name]
+            .filter(Boolean)
+            .map((s) => s[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase() || "?";
+
+        document.getElementById("avatar").textContent = initials;
+        document.getElementById("user-name").textContent = [
+          user.first_name,
+          user.last_name,
+        ]
+          .filter(Boolean)
+          .join(" ");
+        document.getElementById("user-username").textContent = user.username
+          ? `@${user.username}`
+          : "без username";
+
+        document.getElementById("info-id").textContent = user.id ?? "—";
+        document.getElementById("info-name").textContent =
+          [user.first_name, user.last_name].filter(Boolean).join(" ") || "—";
+        document.getElementById("info-username").textContent = user.username
+          ? `@${user.username}`
+          : "—";
+        document.getElementById("info-lang").textContent =
+          user.language_code ?? "—";
+      } else {
+        // не в Telegram — показываем заглушку для разработки
+        document.getElementById("user-name").textContent = "Dev Mode";
+        document.getElementById("user-username").textContent = "не в Telegram";
+        document.getElementById("avatar").textContent = "🛠";
+      }
+
+      // ── Отправка ──
+      const BACKEND = "https://your-server.com"; // <-- замени на свой URL
+
+      const btn = document.getElementById("btn");
+      const inp = document.getElementById("inp");
+      const status = document.getElementById("status");
+
+      function showStatus(type, text) {
+        status.className = `status ${type}`;
+        document.getElementById("status-icon").textContent =
+          type === "success" ? "✓" : "✕";
+        document.getElementById("status-text").textContent = text;
+      }
+
+      btn.addEventListener("click", async () => {
+        const value = inp.value.trim();
+        if (!value) {
+          inp.focus();
+          return;
+        }
+
+        btn.classList.add("loading");
+        btn.disabled = true;
+        status.className = "status";
+
+        try {
+          const res = await fetch(`${BACKEND}/api/action`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ initData: tg.initData, value }),
+          });
+
+          const data = await res.json();
+
+          if (data.ok) {
+            showStatus("success", "Отправлено! Бот уже написал тебе.");
+            inp.value = "";
+            setTimeout(() => tg.close(), 1500);
+          } else {
+            showStatus("error", data.error ?? "Что-то пошло не так");
+          }
+        } catch {
+          showStatus("error", "Сервер недоступен");
+        } finally {
+          btn.classList.remove("loading");
+          btn.disabled = false;
+        }
+      });
+    </script>
   </body>
 </html>
